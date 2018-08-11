@@ -1,0 +1,5 @@
+# PostgreSQL
+# ------------------------------------------------------------------------------
+POSTGRES_DB=stratum_dev
+POSTGRES_USER=root
+POSTGRES_PASSWORD=

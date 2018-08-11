@@ -1,0 +1,62 @@
+version: '2'
+
+volumes:
+  postgres_data_local: {}
+  postgres_backup_local: {}
+
+services:
+  django: &django
+    build:
+      context: .
+      dockerfile: ./compose/local/django/Dockerfile
+    image: stratum_local_django
+    depends_on:
+      - postgres
+    volumes:
+      - .:/app
+    env_file:
+      - ./.envs/.local/.django
+      - ./.envs/.local/.postgres
+    ports:
+      - "8000:8000"
+    command: /start.sh
+
+  postgres:
+    build:
+      context: .
+      dockerfile: ./compose/production/postgres/Dockerfile
+    image: stratum_production_postgres
+    volumes:
+      - postgres_data_local:/var/lib/postgresql/data
+      - postgres_backup_local:/backups
+    env_file:
+      - ./.envs/.local/.postgres
+
+  redis:
+    image: redis:3.0
+
+  celeryworker:
+    <<: *django
+    image: stratum_local_celeryworker
+    depends_on:
+      - redis
+      - postgres
+      
+    env_file:
+      - ./.envs/.local/.django
+      - ./.envs/.local/.postgres
+    ports: []
+    command: /start-celeryworker.sh
+
+  celerybeat:
+    <<: *django
+    image: stratum_local_celerybeat
+    depends_on:
+      - redis
+      - postgres
+      
+    env_file:
+      - ./.envs/.local/.django
+      - ./.envs/.local/.postgres
+    ports: []
+    command: /start-celerybeat.sh
