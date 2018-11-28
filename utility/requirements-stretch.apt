@@ -10,7 +10,7 @@ python3-dev
 zlib1g-dev
 
 ##Postgresql and psycopg2 dependencies
-libpq-dev
+# libpq-dev
 
 ##Pillow dependencies
 libtiff5-dev

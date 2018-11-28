@@ -91,6 +91,23 @@ def thirty_days(request, which, where):
     [print(tweet.all_text + '-' + tweet['created_at'], end='\n\n') for tweet in tweets[0:20]];
     return JsonResponse(tweets, safe=False)
 
+def everywhere(request, which):
+    
+    call = ''
+    strn = which
+    lenght = len(strn.split(',')) - 1 
+    for i, ref in enumerate(strn.split(',')):
+        if (i == lenght):
+            call += '#' + ref
+        else:
+            call += '#' + ref + ' OR '
+    print (call)
+    rule = gen_rule_payload(f"({call}) has:images", results_per_call=100) # testing with a sandbox account
+    print(rule)
+    tweets = collect_results(rule, max_results=100, result_stream_args=premium_search_args) # change this if you need to
+    [print(tweet.all_text + '-' + tweet['created_at'], end='\n\n') for tweet in tweets[0:20]];
+    return JsonResponse(tweets, safe=False)
+
 def full_archive(request, which, where, fr, until):
     
     call = ''
